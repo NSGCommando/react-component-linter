@@ -1,0 +1,53 @@
+.dashboard-container{
+    padding: 20px;
+    font-family: sans-serif; 
+    color: #fff;
+    background-color: #1e1e1e; 
+    min-height: 100vh
+}
+
+.file-details-container{
+    margin-top: 20px;
+    background-color: #252526;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+    /* Box Shadow: Offset-X | Offset-Y | Blur-Radius | Spread-Radius | Color */
+    box-shadow: 
+        0 4px 6px -1px rgba(0, 0, 0, 0.3), 
+        0 2px 4px -1px rgba(0, 0, 0, 0.2);
+        
+    /* Add a top dge to the container */
+    border-top: 1px solid #3c3c3c;
+}
+
+.file-path{
+    color: #4fc1ff;
+    font-family: monospace;
+    word-break: break-all;
+}
+
+.error-card{
+    padding:10px;
+    margin:10px 0;
+    background:#333
+}
+.error-card.severity-error{
+    border-left:4px solid #ff4d4d;
+}
+.error-card.severity-warning{
+    border-left:4px solid #ffae42;
+}
+
+.code-snippet{
+    background-color: #000;
+    color: #d4d4d4;
+    padding: 10px;
+    border-radius: 4px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    font-family: 'Fira Code', 'Courier New', monospace;
+    white-space: pre;
+    border: 1px solid #444;
+    line-height: 1.4;
+}

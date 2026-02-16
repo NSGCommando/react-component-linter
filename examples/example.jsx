@@ -7,7 +7,7 @@ function MyComponent() {
   console.log("This should be flagged!");
   
   return (
-    <div onClick={() => console.warn("This too!")}>
+    <div class="test-class" onClick={() => console.warn("This too!")}>
       <h1>Count: {count}</h1>
     </div>
   );

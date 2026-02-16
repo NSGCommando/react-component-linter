@@ -1,7 +1,8 @@
 import {readFile} from "node:fs/promises";
 import { parse } from "@babel/parser";
 import _traverseWrapper from '@babel/traverse'; // extract the default fn from the exported wrapper object
-import {checkMapKey, checkConsole, checkPascalName} from "./rules.js"
+import {codeFrameColumns} from "@babel/code-frame"
+import * as rules from "./rules.js"
 
 export async function lintFile(filePath){
     const traverse = _traverseWrapper.default;
@@ -23,21 +24,30 @@ export async function lintFile(filePath){
         // so React.js can execute diffing properly
         CallExpression(path) // check if the node is a function call
         {
-            checkConsole(path, errorStore);
-            checkMapKey(path, errorStore);
+            rules.checkConsole(path, errorStore);
+            rules.checkMapKey(path, errorStore);
         },
 
         // Rule: Ensure component names are PascalCase
-        FunctionDeclaration(path) {checkPascalName(path, errorStore);}
+        FunctionDeclaration(path) {rules.checkPascalName(path, errorStore);},
+        // Rule: Check if any tag has "class" instead of "className"
+        JSXAttribute(path){rules.checkJSXClassName(path, errorStore);},
         });
+        const resWithSnippets=results.map(err=>({
+            ...err, // store all error results in a arbitrary bucket before adding the code snippet
+            codeSnippet:codeFrameColumns(code,
+                {start:{line:err.line,column:err.column}},
+                {linesAbove:2,linesBelow:2,highlightCode:false})
+        }))
+        // sort the errors, first by line numbers, and if on same line, then by column numbers
+        const sortedResWithSnippets = resWithSnippets.sort((err1,err2)=>err1.line-err2.line||err1.column-err2.column);
         return {
             fileName: filePath,
-            errors: results
+            errors: sortedResWithSnippets
         };
     }
 
     catch(error){
-        console.error("error processing file", error.message)
         return {
             fileName: filePath,
             errors: [{ line: 0, message: `Parser Error: ${error.message}`, severity: 'error' }]
