@@ -1,0 +1,29 @@
+{
+  "name": "react_linter",
+  "version": "1.0.0",
+  "description": "A Node.js utility tool to parse and lint React.js component files",
+  "keywords": [
+    "react",
+    "linter",
+    "ast",
+    "jsx",
+    "parser",
+    "traversal",
+    "static-analysis"
+  ],
+  "license": "ISC",
+  "author": "NSGCommando (https://github.com/NSGCommando)",
+  "type": "module",
+  "main": "index.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.29.0",
+    "@babel/traverse": "^7.29.0",
+    "@babel/types": "^7.29.0"
+  }
+}
