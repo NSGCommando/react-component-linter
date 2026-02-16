@@ -11,8 +11,8 @@ Error List:
 ## Architecture ##
 - Built using Node.js, Babel, Electron, React.js and Vite.
 - Babel used for creating and traversing the file's Abstract Syntax Tree (AST) and applying the linting rules.
-- Electron used to give the app it's own window and build the app.
-- React.js used to build the app's UI.
+- Electron used to implement the app's own window and build the app (using final assets from Vite's UI build output).
+- React.js used to implement the app's UI.
 - Vite to build and package the UI.
 - The app uses Babel parser to generate an AST for traversal instead of using regex pattern-matching for better performance. 
   - An AST is a tree of all the nodes in the react/jsx file, starting from the file root.
