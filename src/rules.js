@@ -1,6 +1,6 @@
 import * as t from '@babel/types';
 
-export const checkMapKey=(path)=>{
+export const checkMapKey=(path, errorFn)=>{
     const {arguments:args} = path.node;
     if (t.isMemberExpression(path.node.callee) &&
         t.isIdentifier(path.node.callee.property, { name: 'map' })) 
@@ -11,9 +11,14 @@ export const checkMapKey=(path)=>{
                     JSXOpeningElement(jsxPath){
                         const keyPresent = jsxPath.node.attributes.some(val => t.isJSXAttribute(val) && val.name.name === "key");
                         if(!keyPresent) {
-                            const { line } = jsxPath.node.loc.start;
+                            const { line,column } = jsxPath.node.loc.start;
                             const tagName = jsxPath.node.name.name;
-                            console.error(`[ERROR] Missing "key" prop on <${tagName}> in .map() at line ${line}`);
+                            errorFn({
+                                line:line,
+                                column:column,
+                                message:`Missing "key" prop on <${tagName}> in .map() at line ${line}`,
+                                severity:"error"
+                            })
                         }
                     }
                 });
@@ -22,20 +27,29 @@ export const checkMapKey=(path)=>{
         }
     }
 
-export const checkConsole = (path)=>{
+export const checkConsole = (path,errorFn)=>{
         if (
         t.isMemberExpression(path.node.callee) && // check if the function belongs to an object (eg. object.property : console.log)
         t.isIdentifier(path.node.callee.object, { name: 'console' }) // check if the fn's object is "console"
         ) {
         const { line, column } = path.node.loc.start; // get the node's starting line and column values. 'loc.start' contains these
-        console.warn(`[WARNING] Unexpected console statement at line ${line}, position ${column}`); // warn the dev of this console statement
+        errorFn({
+                line:path.node.loc.start.line,
+                column:path.node.loc.start.column,
+                message:`Unexpected console statement at line ${line}, position ${column}`,
+                severity:"warning"
+            })
         }
     }
 
-export const checkPascalName=(path)=>{
-        const name = path.node.id.name;
-        if (path.node.id && /^[a-z]/.test(name)) {
-        // If it returns JSX, it's a component and should be Uppercase
-        console.error(`[ERROR] React component "${name}" should start with an uppercase letter.`);
+export const checkPascalName=(path,errorFn)=>{
+        const name = path.node.id?.name;
+        if (name && /^[a-z]/.test(name)) {
+            errorFn({
+                line:path.node.loc.start.line,
+                column:path.node.loc.start.column,
+                message:`React component "${name}" should start with an uppercase letter.`,
+                severity:"error"
+            })
         }
     }

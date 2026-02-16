@@ -14,16 +14,25 @@
   "license": "ISC",
   "author": "NSGCommando (https://github.com/NSGCommando)",
   "type": "module",
-  "main": "index.js",
+  "main": "main.cjs",
   "directories": {
     "example": "examples"
   },
   "scripts": {
+    "dev":"vite",
+    "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "@babel/parser": "^7.29.0",
     "@babel/traverse": "^7.29.0",
-    "@babel/types": "^7.29.0"
+    "@babel/types": "^7.29.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.1.4",
+    "electron": "^40.4.1",
+    "vite": "^7.3.1"
   }
 }
