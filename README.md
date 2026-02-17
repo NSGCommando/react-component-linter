@@ -4,7 +4,7 @@ This is a simple application for linting React/JSX files with a few simple error
 Error List:
 - Check if Component names are in PascalCase
 - Check if all ```map()``` functions are receiving a ```key``` prop or not.
-  - If they don't React.js will have to re-render the entire list where ```map()``` is being used, as it will default to checking the list positionally and won't be able to replace exact parts of the HTML
+  - If they don't React.js will have to re-render the entire list where ```map()``` is being used, as it will default to checking the list positionally and won't be able to replace exact parts of the DOM
 - Check if tags are using ```className``` and not ```class```
 - Check if ```console.log()``` statements are there in the component code. Generally, you don't want these in a finished codebase.
 
@@ -23,3 +23,5 @@ Error List:
 - Double-click (or Right-click and click Open) on the executable; a window will open
 - Click the button called ```Open & Lint JSX File```, browse to and select your jsx file (An example file with a few errors is provided in the source code as well)
 - The app window will display all errors it found alongside line and column number and a code snippet from the file.
+
+![LinterDemo](https://github.com/user-attachments/assets/1e7951ca-a989-4d17-95a6-430909544f8c)
