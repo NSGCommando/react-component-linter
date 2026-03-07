@@ -24,4 +24,8 @@ Error List:
 - Click the button called ```Open & Lint JSX File```, browse to and select your jsx file (An example file with a few errors is provided in the source code as well)
 - The app window will display all errors it found alongside line and column number and a code snippet from the file.
 
+### Usage from CLI ###
+**PowerShell** - From the folder where the .exe is kept, run `& ".\React Linter 1.0.0.exe"`
+**Cmd** - From the containing folder, run `".\React Linter 1.0.0.exe"`
+
 ![LinterDemo](https://github.com/user-attachments/assets/1e7951ca-a989-4d17-95a6-430909544f8c)
