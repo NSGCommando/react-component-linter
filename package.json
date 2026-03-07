@@ -18,7 +18,7 @@
   "license": "ISC",
   "author": "NSGCommando (https://github.com/NSGCommando)",
   "type": "module",
-  "main": "main.cjs",
+  "main": "main.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build && electron-builder",
