@@ -4,19 +4,41 @@ import _traverseWrapper from '@babel/traverse'; // extract the default fn from t
 import {codeFrameColumns} from "@babel/code-frame"
 import * as rules from "./rules.js"
 
-export async function lintFile(filePath){
+/**
+ * Initial error object, returned via the Rule functions
+ * @typedef {Object} LintError
+ * @property {number} line - Line number where the error occurred
+ * @property {number} column - Column number where the error occurred
+ * @property {string} message - Linter message describing the problem
+ * @property {string} severity - Severity of the error, e.g., "error" or "warning"
+ */
+
+/**
+ * The final Error object, with code snippet attached.
+ * @typedef {LintError & { codeSnippet: string }} FinalError
+ */
+
+/**
+ * @description Exported function for linter logic
+ * @param {string} fileURL - A file URL for the target JS/JSX file
+ * @returns {Promise<{fileName:string,errors:FinalError[]}>} Returns an Promise that resolves to an object with fileName and a list of error objects
+ */
+export async function lintFile(fileURL){
     const traverse = _traverseWrapper.default;
     const results =[] // empty array to store errors
 
+    /**
+     * @description Callback fn to store LintError objects into an array
+     * @param {LintError} error - the LintError object to be stored
+     */
     const errorStore = (error) => {results.push(error)}
     try{
-        // const filePath = path.join("examples","example.jsx") // join a preceding ".." if running this from the "src/" folder
-        const code = await readFile(filePath, 'utf-8');
+        // const fileURL = path.join("examples","example.jsx") // join a preceding ".." if running this from the "src/" folder
+        const code = await readFile(fileURL, 'utf-8');
         const ast = parse(code, {
             sourceType: 'module',
             plugins: ['jsx'],
         });
-        console.log(`--- Linting: ${filePath} ---`);
 
         // traversal code    
         traverse(ast, {
@@ -42,15 +64,15 @@ export async function lintFile(filePath){
         // sort the errors, first by line numbers, and if on same line, then by column numbers
         const sortedResWithSnippets = resWithSnippets.sort((err1,err2)=>err1.line-err2.line||err1.column-err2.column);
         return {
-            fileName: filePath,
+            fileName: fileURL,
             errors: sortedResWithSnippets
         };
     }
 
     catch(error){
         return {
-            fileName: filePath,
-            errors: [{ line: 0, message: `Parser Error: ${error.message}`, severity: 'error' }]
+            fileName: fileURL,
+            errors: [{ line: 0, column:0, message: `Parser Error: ${error.message}`, severity: 'error' }]
         };
     }
 }

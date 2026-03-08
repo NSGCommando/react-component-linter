@@ -1,7 +1,7 @@
 {
   "name": "react-linter",
-  "productName":"React Linter",
-  "version": "1.0.0",
+  "productName":"ReactLinter",
+  "version": "1.1.0",
   "description": "A Node.js utility tool to parse and lint React.js component files",
   "keywords": [
     "react",
@@ -27,20 +27,29 @@
   },
   "build": {
     "appId": "com.nsg-commando.react-linter",
-    "productName": "React Linter",
+    "productName": "ReactLinter",
     "directories": {
       "output": "dist_electron"
     },
     "files": [
       "dist/**/*",
-      "main.cjs",
+      "main.js",
       "preload.cjs",
+      "cli.js",
+      "gui.js",
       "src/index.js",
       "src/rules.js"
     ],
     "win": {
-      "target": "portable"
-    }
+      "target": "zip",
+      "artifactName": "${productName}-${version}.${ext}"
+    },
+    "extraFiles": [
+      {
+        "from": "ReactLinter.bat",
+        "to": "."
+      }
+    ]
   },
   "dependencies": {
     "@babel/code-frame": "^7.29.0",

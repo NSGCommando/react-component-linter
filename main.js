@@ -1,73 +1,23 @@
-/*
-const {app, BrowserWindow, ipcMain, dialog, Menu} = require("electron")
-const { pathToFileURL } = require('url');
-const path = require("node:path");
-*/
-import {app, BrowserWindow,ipcMain,dialog,Menu} from "electron"
-import {pathToFileURL,fileURLToPath} from "url"
-import path from "node:path"
-let lintFile;
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import path from "node:path";
+import { pathToFileURL } from "node:url";
+// build import paths
+const __dirname = import.meta.dirname
+const guiPath = pathToFileURL(path.resolve(__dirname,"gui.js")).href;
+const cliPath = pathToFileURL(path.resolve(__dirname, "cli.js")).href;
 
-// create the app's window
-const createWindow=()=>{
-    const myWindow = new BrowserWindow({
-
-        width:800, height:600,
-        webPreferences: {
-            preload: path.join(__dirname, 'preload.cjs'),
-            contextIsolation: true, // Security best practice
-            nodeIntegration: false  // keep frontend and backend separate
-        },
-    })
-    if(!app.isPackaged){
-        myWindow.loadURL("http://localhost:5173")
-    }
-    else{myWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));}
+// Dev runs via [node] [main.js] [...args] and defaultApp is True
+// Prod runs via >[PathToReactLinter.exe] [PathToTargetFile] and defaultApp is False
+const args = process.argv.slice(process.defaultApp ? 2 : 1);
+console.log(process.defaultApp?"-- Running in Dev Mode --":"-- Running in Production Mode --");
+if(args.length>0){
+    console.log("-- Entered CLI mode --")
+    const {runCLI} = await import(cliPath);
+    await runCLI(args);
+    console.log("-- CLI Finished --")
+    process.exit(0);
+}// if args still empty, run GUI
+else { 
+    console.log("-- GUI Mode --");
+    const {startGUI} = await import (guiPath);
+    await startGUI();
 }
-
-ipcMain.handle("dialog:openFile", async()=>{
-    const {cancelled, filePaths} = await dialog.showOpenDialog({
-    properties: ['openFile'],
-    filters: [
-        { name: 'React Files', extensions: ['jsx', 'js'] }, // show only .jsx or .js
-        { name: 'All Files', extensions: ['*'] }           // fallback selection for user control
-    ]
-    });
-    if (!cancelled) return filePaths[0];
-})
-ipcMain.handle("lint-file", async(event, filePath)=>{ //DO NOT REMOVE that "event". ipcMain.handle takes POSITIONAL arguments
-    try{
-        const modulePath = path.join(app.getAppPath(),"src","index.js"); // get the internal absolute filepath of the executable's app
-        const moduleFileURL = pathToFileURL(modulePath).href; // convert the module path into a File URL like "D//:folder/file.js" for windows
-        const {lintFile} = await import(moduleFileURL);
-        const lintRes = lintFile(filePath)
-        return lintRes
-    }
-    catch(err){
-        console.error("Linter failed to load:", err);
-        return { error: "Failed to load linter module." };
-    }
-    
-})
-app.whenReady().then(()=>{
-    const template = [
-      {
-        label: 'View',
-        submenu: [
-          { role: 'reload' },
-          { role: 'forceReload' },
-          { type: 'separator' },
-          { role: 'toggleDevTools' },
-          { type: 'separator' },
-          { role: 'resetZoom' },
-          { role: 'zoomIn' },
-          { role: 'zoomOut' }
-        ]
-      }
-    ];
-    const menu = Menu.buildFromTemplate(template);
-    Menu.setApplicationMenu(menu);
-    createWindow()
-})

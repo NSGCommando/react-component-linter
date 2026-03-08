@@ -1,4 +1,6 @@
 ### React Component Linter ###
+![LinterDemo](https://github.com/user-attachments/assets/1e7951ca-a989-4d17-95a6-430909544f8c)
+
 ## Introduction ##
 This is a simple application for linting React/JSX files with a few simple errors/warnings.
 Error List:
@@ -19,13 +21,23 @@ Error List:
 - Using AST is better as one can traverse selectively, for example - only checking for JSXAttributes or function calls (CallExpression); Regex is blind to this specificity.
 
 ## Usage ##
-- Download the executable from Releases
-- Double-click (or Right-click and click Open) on the executable; a window will open
+- Download the zipped binary from Releases
+- Extract the binary to a location of your choice.
+
+### GUI Mode
+- Double-click (or Right-click and click Open) on the `ReactLinter.exe` executable in the folder to open GUI window.
 - Click the button called ```Open & Lint JSX File```, browse to and select your jsx file (An example file with a few errors is provided in the source code as well)
 - The app window will display all errors it found alongside line and column number and a code snippet from the file.
 
-### Usage from CLI ###
-**PowerShell** - From the folder where the .exe is kept, run `& ".\React Linter 1.0.0.exe"`
-**Cmd** - From the containing folder, run `".\React Linter 1.0.0.exe"`
+### CLI Mode ###
+- Open Command Prompt (CMD) or Windows PowerShell terminal and navigate into the extracted folder
+ - Navigate via `cd [filepath]`. You can get the filepath by dragging the extracted folder into the terminal after typing `cd `
+- **CMD**: Run the following command: `ReactLinter.bat [YourFilePath]`
+- **PowerShell**: Run the following command: `.\ReactLinter.bat [YourFilePath]`
+- Again, easily obtain `YourFilePath` by dragging your .js/.jsx file to terminal
+- The batch script takes passed arguments and passed it to the `ReactLinter.exe`, starting it in CLI mode without the GUI
+- Linter output is shown on the terminal window
+- CLI mode returns standard exit codes to denote success/failure:
+  - `0`: No errors found.
+  - `1`: Errors detected in the file.
 
-![LinterDemo](https://github.com/user-attachments/assets/1e7951ca-a989-4d17-95a6-430909544f8c)
