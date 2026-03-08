@@ -1,5 +1,9 @@
-### React Component Linter ###
-![LinterDemo](https://github.com/user-attachments/assets/1e7951ca-a989-4d17-95a6-430909544f8c)
+# React Component Linter #
+### GUI Mode Demo
+![linter-gui-mode-demo](https://github.com/user-attachments/assets/109a68d6-8591-4ab4-93d0-5d1971389025)
+
+### CLI Mode Demo
+![linter-cli-mode-demo](https://github.com/user-attachments/assets/75aff29d-3d4c-428e-9e8d-55e6ba1eb49e)
 
 ## Introduction ##
 This is a simple application for linting React/JSX files with a few simple errors/warnings.
