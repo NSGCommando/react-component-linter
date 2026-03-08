@@ -4,3 +4,6 @@ node_modules/
 
 # Workspace files
 *.code-workspace
+
+# Ignore local verification files (manually uploaded to releases)
+sigs_public_keys
