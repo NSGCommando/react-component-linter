@@ -45,3 +45,9 @@ Error List:
   - `0`: No errors found.
   - `1`: Errors detected in the file.
 
+## Security and Verification
+- All releases from v1.1.0 will include:
+  - Binary SHA256 hash
+  - SHA256 Signature
+  - Public Key to verify signature
+- Detailed instructions on how to verify each item is provided in the release notes
