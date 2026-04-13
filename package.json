@@ -1,7 +1,7 @@
 {
   "name": "react-linter",
   "productName": "ReactLinter",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A Node.js utility tool to parse and lint React.js component files",
   "keywords": [
     "react",
@@ -38,7 +38,10 @@
       "cli.js",
       "gui.js",
       "src/index.js",
-      "src/rules.js"
+      "src/rules.js",
+      "src/utils/utilFuncs.js",
+      "src/utils/utilsConsts.js",
+      "src/utils/zipHandler.js"
     ],
     "win": {
       "target": "zip",

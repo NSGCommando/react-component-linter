@@ -29,13 +29,8 @@ function App() {
         {loading ? 'Analyzing...' : 'Open & Lint JSX File'}
       </button>
 
-      <div id="result-tab">
-        <ResultTab resultList={resultList} activeTab={activeTab} setActiveTab={setActiveTab}/>
-      </div>
-
-      <div id="error-card">
-        <ErrorCard activeResult={activeResult}/>
-      </div>
+      <ResultTab resultList={resultList} activeTab={activeTab} setActiveTab={setActiveTab}/>
+      <ErrorCard activeResult={activeResult}/>
     </div>
   );
 }

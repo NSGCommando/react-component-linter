@@ -1,18 +1,8 @@
 import path from "node:path";
 import fs from "node:fs";
 import yauzl from "yauzl-promise";
-
-// HELPER DYNAMIC IMPORTS
-const loadUtils = async (targetPath, targetFuncName) => {
-  try {
-    const module = await import(targetPath.href);
-    if (!module[targetFuncName]) {
-        throw new Error(`Function "${targetFuncName}" not found in module`);
-    }
-    return module[targetFuncName];
-  }
-  catch (err) {console.error("Helper failed to load:", err);}
-};
+import { lintFile } from "../index.js";
+import { codeExts } from "./utilsConsts.js";
 
 /**
  * @typedef {Object} LintResult
@@ -27,24 +17,8 @@ const loadUtils = async (targetPath, targetFuncName) => {
  */
 export async function handleFiles(filePath){
     // define vars here for scope access
-    let lintFile;
-    let codeExts;
     const resultList = [];
     const ext = path.extname(filePath).toLowerCase(); // only accept JX,JSX or ZIP files
-    // import the linter logic file
-        try{
-            // Dynamic imports (for ES6 Modules) require a pointer to the .js file inside the app.asar
-            // Build the path to the Linter module
-            const moduleFileURL = new URL("../index.js", import.meta.url); // get the internal absolute filepath of the executable's app
-            const moduleTarget = "lintFile";
-            lintFile = await loadUtils(moduleFileURL, moduleTarget);
-            // import codefile extension array
-            const codeExtURL = new URL("./utilsConsts.js", import.meta.url);
-            const codeExtTarget = "codeExts";
-            codeExts = await loadUtils(codeExtURL, codeExtTarget);
-        }
-        catch(err){console.error("Linter failed to load:", err);}
-
     if(ext===".zip"){
         console.log(`Opened Zip at path: ${filePath}`)
         const zip = await yauzl.open(filePath);

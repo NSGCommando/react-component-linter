@@ -1,21 +1,5 @@
 import * as t from '@babel/types';
-
-let inspectReturnedValue;
-// HELPER DYNAMIC IMPORTS
-const loadUtils = async (targetPath, targetFuncName) => {
-  try {
-    const module = await import(targetPath.href);
-    if (!module[targetFuncName]) {
-        throw new Error(`Function "${targetFuncName}" not found in module`);
-    }
-    return module[targetFuncName];
-  } 
-  catch (err) {console.error("Helper failed to load:", err);}
-};
-const utilPath = new URL("./utils/utilFuncs.js", import.meta.url);
-const targetFuncName = "inspectReturnedValue";
-// load helper function
-inspectReturnedValue = await loadUtils(utilPath,targetFuncName);
+import { inspectReturnedValue } from './utils/utilFuncs.js';
 
 // RULE IMPLEMENTATIONS
 /**
