@@ -13,19 +13,29 @@ export const checkMapKey=(path, errorFn)=>{
         {
             const callback_fn = args[0];
             if (t.isArrowFunctionExpression(callback_fn) || t.isFunctionExpression(callback_fn)){
-                path.traverse({
-                    JSXOpeningElement(jsxPath){
-                        const keyPresent = jsxPath.node.attributes.some(val => t.isJSXAttribute(val) && val.name.name === "key");
-                        if(!keyPresent) {
-                            const { line,column } = jsxPath.node.loc.start;
-                            const tagName = jsxPath.node.name.name;
+                const checkJSX = (node)=> {
+                    if(!node) return;
+                    if(t.isJSXElement(node)){
+                        const hasKey = node.openingElement.attributes.some(
+                                        (val) =>
+                                            t.isJSXAttribute(val) &&
+                                            val.name.name === "key"
+                        );
+                        if(!hasKey){
+                            const { line, column } = node.loc.start;
                             errorFn({
-                                line:line,
-                                column:column,
-                                message:`Missing "key" prop on <${tagName}> in .map() at line ${line}`,
-                                severity:"error"
-                            })
+                                line,
+                                column,
+                                message: `Missing "key" prop on <${node.openingElement.name.name}> in .map()`,
+                                severity: "error"
+                            });
                         }
+                    }
+                };
+                if (t.isJSXElement(callback_fn.body)) { checkJSX(callback_fn.body); }
+                path.traverse({
+                    ReturnStatement(returnPath) {
+                        checkJSX(returnPath.node.argument);
                     }
                 });
                 path.skip(); // already checked map()'s children here, tell main traversal to skip it
