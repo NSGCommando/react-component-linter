@@ -1,10 +1,18 @@
 import path from "node:path";
 import fs from "node:fs";
 import yauzl from "yauzl-promise";
-import { pathToFileURL } from "node:url";
 
-// Get the current directory of this file
-const __dirname = import.meta.dirname
+// HELPER DYNAMIC IMPORTS
+const loadUtils = async (targetPath, targetFuncName) => {
+  try {
+    const module = await import(targetPath.href);
+    if (!module[targetFuncName]) {
+        throw new Error(`Function "${targetFuncName}" not found in module`);
+    }
+    return module[targetFuncName];
+  }
+  catch (err) {console.error("Helper failed to load:", err);}
+};
 
 /**
  * @typedef {Object} LintResult
@@ -27,13 +35,13 @@ export async function handleFiles(filePath){
         try{
             // Dynamic imports (for ES6 Modules) require a pointer to the .js file inside the app.asar
             // Build the path to the Linter module
-            const modulePath = path.resolve(__dirname, "../index.js"); // get the internal absolute filepath of the executable's app
-            const moduleFileURL = pathToFileURL(modulePath).href; // convert the module path into a File URL like "D//:folder/file.js"
-            ({ lintFile } = await import(moduleFileURL)); // Use of parenthesis is needed; ref: Destructuring - Javascript|MDN
+            const moduleFileURL = new URL("../index.js", import.meta.url); // get the internal absolute filepath of the executable's app
+            const moduleTarget = "lintFile";
+            lintFile = await loadUtils(moduleFileURL, moduleTarget);
             // import codefile extension array
-            const codeExtPath = path.resolve(__dirname, "./utilsConsts.js");
-            const codeExtURL = pathToFileURL(codeExtPath).href;
-            ({ codeExts } = await import(codeExtURL));
+            const codeExtURL = new URL("./utilsConsts.js", import.meta.url);
+            const codeExtTarget = "codeExts";
+            codeExts = await loadUtils(codeExtURL, codeExtTarget);
         }
         catch(err){console.error("Linter failed to load:", err);}
 
