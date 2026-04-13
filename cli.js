@@ -1,9 +1,10 @@
 import path from "node:path";
 import fs from "node:fs";
-import { pathToFileURL } from "node:url";
-let lintRes
-// Get the current directory of this file
-const __dirname = import.meta.dirname
+import { handleFiles } from "./src/utils/zipHandler.js";
+import { exts } from "./src/utils/utilsConsts.js";
+
+// var declarations to make them available globally
+let errorCounter = 0;
 /**
  * @function runCLI
  * @description Exports the full functionality for CLI mode of the Linter
@@ -17,9 +18,10 @@ export const runCLI = async (args) =>{
     }
     const fileArg = args[0];
     const filePath = path.resolve(process.cwd(),fileArg);
-    const ext = path.extname(filePath).toLowerCase(); // only lint JS/JSX files
-    if (![".js", ".jsx"].includes(ext)) {
-        console.error("Error: Only .js or .jsx files are supported.");
+    const ext = path.extname(filePath).toLowerCase(); // only accept JX,JSX or ZIP files
+    if (!exts.includes(ext)) // use Array.Prototype.includes to check membership
+    {
+        console.error("Error: Only .js, .jsx or .zip files are supported.");
         process.exit(1);
     }
     // Ensure the filepath is pointing to a file, not a directory
@@ -34,28 +36,26 @@ export const runCLI = async (args) =>{
         process.exit(1);
     }
     console.log("Info: File validated:",filePath);
-    // import the linter logic file
-    try{
-        // Build the path to your module
-        const modulePath = path.resolve(__dirname, "src/index.js");
-        const moduleFileURL = pathToFileURL(modulePath).href;
-        const { lintFile } = await import(moduleFileURL);
-        lintRes = await lintFile(filePath)
-    }
-    catch(err){console.error("Linter failed to load:", err);}
+
+    // handle zips and single files
+    const results = await handleFiles(filePath);
+    
     // Output the returned data to console
-    if (lintRes.errors.length === 0) {
-        console.log("Linter found no errors!");
-        process.exitCode = 0;
-        return;
+    for (const listItem of results){
+        console.log(`Filename: ${listItem.fileName}`)
+        if (listItem.errors.length === 0) {
+            console.log("Linter found no errors in current file!");
+            continue;
+        }
+        for (const err of listItem.errors) {
+            errorCounter+=1;
+            console.log(`${err.severity.toUpperCase()} at ${err.line}:${err.column}`);
+            console.log(err.message);
+            console.log(err.codeSnippet);
+            console.log();
+        }
     }
-    for (const err of lintRes.errors) {
-    console.log(
-        `${err.severity.toUpperCase()} at ${err.line}:${err.column}`
-    );
-    console.log(err.message);
-    console.log(err.codeSnippet);
-    console.log();
-    }
-    process.exitCode = 1;
+    console.log(`Error Counter: ${errorCounter}`)
+    if(errorCounter===0) process.exitCode = 0;
+    else process.exitCode = 1;
 }

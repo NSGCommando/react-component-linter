@@ -1,8 +1,8 @@
-import {readFile} from "node:fs/promises";
 import { parse } from "@babel/parser";
 import _traverseWrapper from '@babel/traverse'; // extract the default fn from the exported wrapper object
 import {codeFrameColumns} from "@babel/code-frame"
 import * as rules from "./rules.js"
+import { Readable } from "node:stream";
 
 /**
  * Initial error object, returned via the Rule functions
@@ -20,10 +20,11 @@ import * as rules from "./rules.js"
 
 /**
  * @description Exported function for linter logic
- * @param {string} fileURL - A file URL for the target JS/JSX file
- * @returns {Promise<{fileName:string,errors:FinalError[]}>} Returns an Promise that resolves to an object with fileName and a list of error objects
+ * @param {string} filename - The name of the linted file
+ * @param {Readable} readStream - Data stream of the entry file
+ * @returns {Promise<{fileName:string,errors:FinalError[]}>} Returns a Promise that resolves to an object with fileName and a list of error objects
  */
-export async function lintFile(fileURL){
+export async function lintFile(filename, readStream){
     const traverse = _traverseWrapper.default;
     const results =[] // empty array to store errors
 
@@ -32,9 +33,14 @@ export async function lintFile(fileURL){
      * @param {LintError} error - the LintError object to be stored
      */
     const errorStore = (error) => {results.push(error)}
+    // collect the file by consuming the readStream
+    const chunks = [];
+    for await (const chunk of readStream) {
+    chunks.push(chunk);
+    }
+    const buffer = Buffer.concat(chunks);
     try{
-        // const fileURL = path.join("examples","example.jsx") // join a preceding ".." if running this from the "src/" folder
-        const code = await readFile(fileURL, 'utf-8');
+        const code = buffer.toString("utf-8");
         const ast = parse(code, {
             sourceType: 'module',
             plugins: ['jsx'],
@@ -64,14 +70,14 @@ export async function lintFile(fileURL){
         // sort the errors, first by line numbers, and if on same line, then by column numbers
         const sortedResWithSnippets = resWithSnippets.sort((err1,err2)=>err1.line-err2.line||err1.column-err2.column);
         return {
-            fileName: fileURL,
+            fileName: filename,
             errors: sortedResWithSnippets
         };
     }
 
     catch(error){
         return {
-            fileName: fileURL,
+            fileName: filename,
             errors: [{ line: 0, column:0, message: `Parser Error: ${error.message}`, severity: 'error' }]
         };
     }
