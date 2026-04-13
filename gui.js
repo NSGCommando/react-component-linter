@@ -1,7 +1,6 @@
 import {app, BrowserWindow,ipcMain,dialog,Menu} from "electron"
 import {fileURLToPath,pathToFileURL} from "node:url"
 import path from "node:path"
-let lintFile;
 // since ES6 modules don't have access to "__dirname", calculate it ourselves
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -35,7 +34,7 @@ export const startGUI=async()=>{
         const {cancelled, filePaths} = await dialog.showOpenDialog({
         properties: ['openFile'],
         filters: [
-            { name: 'React Files', extensions: ['jsx', 'js'] }, // show only .jsx or .js
+            { name: 'React Files', extensions: ['jsx', 'js', 'zip'] }, // show only .jsx, .js or r.zip files
             { name: 'All Files', extensions: ['*'] }           // fallback selection for user control
         ]
         });
@@ -44,10 +43,10 @@ export const startGUI=async()=>{
     ipcMain.handle("lint-file", async(event, filePath)=>{ //DO NOT REMOVE that "event". ipcMain.handle takes POSITIONAL arguments
         try{
             // Dynamic imports (for ES6 Modules) require a pointer to the .js file inside the app.asar
-            const modulePath = path.resolve(__dirname,"src/index.js"); // get the internal absolute filepath of the executable's app
+            const modulePath = path.resolve(__dirname,"src/utils/zipHandler.js"); // get the internal absolute filepath of the executable's app
             const moduleFileURL = pathToFileURL(modulePath).href; // convert the module path into a File URL like "D//:folder/file.js"
-            const {lintFile} = await import(moduleFileURL);
-            const lintRes = lintFile(filePath)
+            const {handleFiles} = await import(moduleFileURL);
+            const lintRes = handleFiles(filePath)
             return lintRes
         }
         catch(err){
